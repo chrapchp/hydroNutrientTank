@@ -49,11 +49,11 @@
 #define ALARM_REFRESH_INTERVAL 10 // ms
 
 
-#define B1N1_T1_LSH_001_GPIO 1 // GPIO for MCP ports 0 is labelled DRAIN but not used
-#define B1N1_T1_LSL_001_GPIO 2
-#define B1N1_T1_ZSC_003_GPIO 3
-#define B1N1_T1_ZSC_001_GPIO 4
-#define B1N1_T1_ZSC_002_GPIO 5
+#define B1N1_T1_LSH_001_GPIO 3 // GPIO for MCP ports 0 is labelled DRAIN but not used
+#define B1N1_T1_LSL_001_GPIO 1
+#define B1N1_T1_ZSC_003_GPIO 5
+#define B1N1_T1_ZSC_001_GPIO 2
+#define B1N1_T1_ZSC_002_GPIO 0
 #define B1N1_T1_ZSC_004_GPIO 6
 
 bool GPIOStatus[8];
