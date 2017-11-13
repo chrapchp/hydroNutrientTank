@@ -18,12 +18,24 @@
 
 // specific read holding registers to unit
 //#define FUTURE CUSTOM_HR_START_READ
-#define B1N1_T1_LSH_001_MB CUSTOM_HR_START_READ 
+
+
+#define B1N1_T1_PT_001_MB HR_TEMPERATURE2 + 1
+#define B1N1_T1_PT_002_MB B1N1_T1_PT_001_MB + 1
+#define B1N1_T1_PT_003_MB B1N1_T1_PT_002_MB + 1
+   
+ #define B1N1_T1_FT_004_MB B1N1_T1_PT_003_MB + 1
+ #define B1N1_T1_FT_003_MB B1N1_T1_FT_004_MB + 1
+#define B1N1_LT_001_MB B1N1_T1_FT_003_MB + 1
+
+#define HEART_BEAT B1N1_LT_001_MB + 1
+#define B1N1_T1_LSH_001_MB HEART_BEAT + 1 
 #define B1N1_T1_LSL_001_MB B1N1_T1_LSH_001_MB + 1
 #define B1N1_T1_ZSC_003_MB B1N1_T1_LSL_001_MB + 1 
 #define B1N1_T1_ZSC_001_MB B1N1_T1_ZSC_003_MB + 1
 #define B1N1_T1_ZSC_002_MB B1N1_T1_ZSC_001_MB + 1 
 #define B1N1_T1_ZSC_004_MB B1N1_T1_ZSC_002_MB + 1
+
 
 // specific write holding registers to unit
 #define FUTURES CUSTOM_HR_START_WRITE

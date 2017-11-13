@@ -70,15 +70,16 @@ OneWire oneWireBus1(TEMPERATURE1);
 OneWire oneWireBus2(TEMPERATURE2);
 
 DallasTemperature B1N1_T1_TT_003(& oneWireBus1);
-DallasTemperature B1N1_T1_TT_004(& oneWireBus2);
+DallasTemperature B1N1_T1_TT_002(& oneWireBus2);
 
 DA_DiscreteOutput B1N1_T1_XY_005 = DA_DiscreteOutput(9, LOW); // V1
 DA_DiscreteOutput B1N1_T1_XY_003 = DA_DiscreteOutput(3, LOW); // V2
 DA_DiscreteOutput B1N1_T1_XY_001 = DA_DiscreteOutput(10, LOW); // V3
 DA_DiscreteOutput B1N1_T1_XY_002 = DA_DiscreteOutput(11, LOW); // V4
-DA_AnalogInput B1N1_T1_PT_001 = DA_AnalogInput(A1, 0.0, 1023.); // min max
+
+DA_AnalogInput B1N1_T1_PT_001 = DA_AnalogInput(A6, 0.0, 1023.); // min max
 DA_AnalogInput B1N1_T1_PT_002 = DA_AnalogInput(A2, 0.0, 1023.); // min max
-DA_AnalogInput B1N1_T1_PT_003 = DA_AnalogInput(A6, 0.0, 1023.); // min max
+DA_AnalogInput B1N1_T1_PT_003 = DA_AnalogInput(A1, 0.0, 1023.); // min max
 DA_AnalogInput B1N1_LT_001 = DA_AnalogInput(A7, 0.0, 1023.); // min max
 
 //Flow meter 
@@ -161,7 +162,7 @@ void init1WireTemperatureSensor(DallasTemperature * sensor, int idx)
 void initHydroponicOneWireTemps()
 {
   init1WireTemperatureSensor(& B1N1_T1_TT_003, 1);
-  init1WireTemperatureSensor(& B1N1_T1_TT_004, 2);
+  init1WireTemperatureSensor(& B1N1_T1_TT_002, 2);
   
 }
 
@@ -276,7 +277,7 @@ void doPoll1WireTemperature(DallasTemperature * sensor, int idx)
 void doProcess1WireTemperatures()
 {
   doPoll1WireTemperature(& B1N1_T1_TT_003, 0);
-  doPoll1WireTemperature(& B1N1_T1_TT_004, 1);
+  doPoll1WireTemperature(& B1N1_T1_TT_002, 1);
   
 }
 
@@ -308,14 +309,14 @@ void refreshModbusRegisters()
 {
 
   modbusRegisters[HR_TEMPERATURE1] = B1N1_T1_TT_003.getTempCByIndex(0) * 100;
-  modbusRegisters[HR_TEMPERATURE2] = B1N1_T1_TT_004.getTempCByIndex(0) * 100;
+  modbusRegisters[HR_TEMPERATURE2] = B1N1_T1_TT_002.getTempCByIndex(0) * 100;
   
-  modbusRegisters[HR_PRESSURE1] = B1N1_T1_PT_001.getRawSample();
-  modbusRegisters[HR_PRESSURE2] = B1N1_T1_PT_002.getRawSample();
-  modbusRegisters[HR_PRESSURE3] = B1N1_T1_PT_003.getRawSample();
-  modbusRegisters[HR_FLOW1] = B1N1_T1_FT_004.getCurrentPulses();
-  modbusRegisters[HR_FLOW2] = B1N1_T1_FT_003.getCurrentPulses();  
-  modbusRegisters[HR_HEARTBEAT] = heartBeat;
+  modbusRegisters[B1N1_T1_PT_001_MB] = B1N1_T1_PT_001.getRawSample();
+  modbusRegisters[B1N1_T1_PT_002_MB] = B1N1_T1_PT_002.getRawSample();
+  modbusRegisters[B1N1_T1_PT_003_MB] = B1N1_T1_PT_003.getRawSample();
+  modbusRegisters[B1N1_T1_FT_004_MB] = B1N1_T1_FT_004.getCurrentPulses();
+  modbusRegisters[B1N1_T1_FT_003_MB] = B1N1_T1_FT_003.getCurrentPulses();  
+ 
 
   modbusRegisters[B1N1_T1_LSH_001_MB] = GPIOStatus[B1N1_T1_LSH_001_GPIO];
   modbusRegisters[B1N1_T1_LSL_001_MB]= GPIOStatus[B1N1_T1_LSL_001_GPIO];
@@ -323,7 +324,9 @@ void refreshModbusRegisters()
   modbusRegisters[B1N1_T1_ZSC_001_MB]= GPIOStatus[B1N1_T1_ZSC_001_GPIO];
   modbusRegisters[B1N1_T1_ZSC_002_MB]= GPIOStatus[B1N1_T1_ZSC_002_GPIO];
   modbusRegisters[B1N1_T1_ZSC_004_MB]= GPIOStatus[B1N1_T1_ZSC_004_GPIO];
-  
+  modbusRegisters[B1N1_LT_001_MB]= B1N1_LT_001.getRawSample();
+
+   modbusRegisters[HEART_BEAT] = heartBeat;
 }
 
 
