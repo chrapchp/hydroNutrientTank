@@ -72,10 +72,10 @@ OneWire oneWireBus2(TEMPERATURE2);
 DallasTemperature B1N1_T1_TT_003(& oneWireBus1);
 DallasTemperature B1N1_T1_TT_002(& oneWireBus2);
 
-DA_DiscreteOutput B1N1_T1_XY_005 = DA_DiscreteOutput(9, LOW); // V1
-DA_DiscreteOutput B1N1_T1_XY_003 = DA_DiscreteOutput(3, LOW); // V2
+DA_DiscreteOutput B1N1_T1_XY_005 = DA_DiscreteOutput(9, LOW); // V4
+DA_DiscreteOutput B1N1_T1_XY_003 = DA_DiscreteOutput(11, LOW); // V2
 DA_DiscreteOutput B1N1_T1_XY_001 = DA_DiscreteOutput(10, LOW); // V3
-DA_DiscreteOutput B1N1_T1_XY_002 = DA_DiscreteOutput(11, LOW); // V4
+//DA_DiscreteOutput B1N1_T1_XY_002 = DA_DiscreteOutput(11, LOW); // V1  // not used
 
 DA_AnalogInput B1N1_T1_PT_001 = DA_AnalogInput(A6, 0.0, 1023.); // min max
 DA_AnalogInput B1N1_T1_PT_002 = DA_AnalogInput(A2, 0.0, 1023.); // min max
@@ -83,18 +83,18 @@ DA_AnalogInput B1N1_T1_PT_003 = DA_AnalogInput(A1, 0.0, 1023.); // min max
 DA_AnalogInput B1N1_LT_001 = DA_AnalogInput(A7, 0.0, 1023.); // min max
 
 //Flow meter 
-#define B1N1_T1_FT_004_PIN  A3
-#define B1N1_T1_FT_003_PIN  3
-//#define FT_004_PIN  D4
+#define B1N1_T1_FT_001_PIN  3
+#define B1N1_T1_FT_003_PIN  4
+//#define FT_001_PIN  D4
 #define FLOW_CALC_PERIOD_SECONDS 1 // flow rate calc period
 
 #define ENABLE_FLOW3_SENSOR_INTERRUPTS attachInterrupt(digitalPinToInterrupt(B1N1_T1_FT_003_PIN), onB1N1_T1_FT_003_PulseIn, RISING)
 #define DISABLE_FLOW3_SENSOR_INTERRUPTS detachInterrupt(digitalPinToInterrupt(B1N1_T1_FT_003_PIN))
-#define ENABLE_FLOW4_SENSOR_INTERRUPTS attachPinChangeInterrupt(digitalPinToPinChangeInterrupt(B1N1_T1_FT_004_PIN), onB1N1_T1_FT_004_PulseIn, RISING);
-#define DISABLE_FLOW4_SENSOR_INTERRUPTS detachPinChangeInterrupt(digitalPinToInterrupt(B1N1_T1_FT_003_PIN))
+#define ENABLE_FLOW4_SENSOR_INTERRUPTS attachPinChangeInterrupt(digitalPinToPinChangeInterrupt(B1N1_T1_FT_001_PIN), onB1N1_T1_FT_001_PulseIn, RISING);
+#define DISABLE_FLOW4_SENSOR_INTERRUPTS detachPinChangeInterrupt(digitalPinToInterrupt(B1N1_T1_FT_001_PIN))
 
 
-FlowMeter B1N1_T1_FT_004(B1N1_T1_FT_004_PIN, FLOW_CALC_PERIOD_SECONDS); // interrupt pin, calculation period in seconds
+FlowMeter B1N1_T1_FT_001(B1N1_T1_FT_001_PIN, FLOW_CALC_PERIOD_SECONDS); // interrupt pin, calculation period in seconds
 FlowMeter B1N1_T1_FT_003(B1N1_T1_FT_003_PIN, FLOW_CALC_PERIOD_SECONDS);
 
 // poll I/O every 2 seconds
@@ -111,9 +111,9 @@ unsigned int heartBeat = 0;
 HardwareSerial *tracePort = & Serial;
 #endif
 
-void onB1N1_T1_FT_004_PulseIn()
+void onB1N1_T1_FT_001_PulseIn()
 {
-  B1N1_T1_FT_004.handleFlowDetection();
+  B1N1_T1_FT_001.handleFlowDetection();
 }
 
 void onB1N1_T1_FT_003_PulseIn()
@@ -211,14 +211,14 @@ pollTimer.refresh();
 void processFlowMeter4()
 {
     DISABLE_FLOW4_SENSOR_INTERRUPTS;
-  B1N1_T1_FT_004.end();
+  B1N1_T1_FT_001.end();
 
   #ifdef TRACE_FLOW_SENSOR
   *tracePort << "FLOW 4:";
-    B1N1_T1_FT_004.serialize( tracePort, true);
+    B1N1_T1_FT_001.serialize( tracePort, true);
   #endif
 
-  B1N1_T1_FT_004.begin();
+  B1N1_T1_FT_001.begin();
   ENABLE_FLOW4_SENSOR_INTERRUPTS;
 }
 
@@ -314,7 +314,7 @@ void refreshModbusRegisters()
   modbusRegisters[B1N1_T1_PT_001_MB] = B1N1_T1_PT_001.getRawSample();
   modbusRegisters[B1N1_T1_PT_002_MB] = B1N1_T1_PT_002.getRawSample();
   modbusRegisters[B1N1_T1_PT_003_MB] = B1N1_T1_PT_003.getRawSample();
-  modbusRegisters[B1N1_T1_FT_004_MB] = B1N1_T1_FT_004.getCurrentPulses();
+  modbusRegisters[B1N1_T1_FT_001_MB] = B1N1_T1_FT_001.getCurrentPulses();
   modbusRegisters[B1N1_T1_FT_003_MB] = B1N1_T1_FT_003.getCurrentPulses();  
  
 
@@ -377,17 +377,17 @@ void checkAndResetDO(unsigned int bitOffset, DA_DiscreteOutput * aDO)
 
 void processValveCommands()
 {
-  checkAndActivateDO(VALVE1_OPEN_CLOSE, & B1N1_T1_XY_003);
-  checkAndResetDO(VALVE1_OPEN_CLOSE, & B1N1_T1_XY_003);
+ // checkAndActivateDO(VALVE1_OPEN_CLOSE, & B1N1_T1_XY_002);  // valve 1 not used
+ // checkAndResetDO(VALVE1_OPEN_CLOSE, & B1N1_T1_XY_002);
 
-  checkAndActivateDO(VALVE2_OPEN_CLOSE, & B1N1_T1_XY_002);
-  checkAndResetDO(VALVE2_OPEN_CLOSE, & B1N1_T1_XY_002);
-
-  checkAndActivateDO(VALVE3_OPEN_CLOSE, & B1N1_T1_XY_001);
-  checkAndResetDO(VALVE3_OPEN_CLOSE, & B1N1_T1_XY_001);
+  checkAndActivateDO(VALVE2_OPEN_CLOSE, & B1N1_T1_XY_003);
+  checkAndResetDO(VALVE2_OPEN_CLOSE, & B1N1_T1_XY_003);
 
   checkAndActivateDO(VALVE4_OPEN_CLOSE, & B1N1_T1_XY_005);
   checkAndResetDO(VALVE4_OPEN_CLOSE, & B1N1_T1_XY_005);
+
+  checkAndActivateDO(VALVE3_OPEN_CLOSE, & B1N1_T1_XY_001);
+  checkAndResetDO(VALVE3_OPEN_CLOSE, & B1N1_T1_XY_001);
 }
 
 void processModbusCommands()
